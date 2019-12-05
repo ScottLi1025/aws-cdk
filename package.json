@@ -1,0 +1,39 @@
+{
+  "name": "cdk-type_script",
+  "version": "0.1.0",
+  "bin": {
+    "cdk-type_script": "bin/cdk-type_script.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest",
+    "cdk": "cdk"
+  },
+  "devDependencies": {
+    "@aws-cdk/assert": "^1.18.0",
+    "@types/jest": "^24.0.23",
+    "aws-cdk": "^1.18.0",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.2.0",
+    "ts-node": "^8.5.4",
+    "typescript": "~3.7.2"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-autoscaling": "^1.18.0",
+    "@aws-cdk/aws-cloud9": "^1.18.0",
+    "@aws-cdk/aws-cloudformation": "^1.18.0",
+    "@aws-cdk/aws-cognito": "^1.18.0",
+    "@aws-cdk/aws-ec2": "^1.18.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "^1.18.0",
+    "@aws-cdk/aws-lambda": "^1.18.0",
+    "@aws-cdk/aws-opsworks": "^1.18.0",
+    "@aws-cdk/aws-rds": "^1.18.0",
+    "@aws-cdk/aws-secretsmanager": "^1.18.0",
+    "@aws-cdk/core": "^1.18.0",
+    "@aws-cdk/custom-resources": "^1.18.0",
+    "aws-ec2": "^1.0.0",
+    "aws-iam": "^2.0.5",
+    "source-map-support": "^0.5.16"
+  }
+}
