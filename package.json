@@ -20,9 +20,11 @@
     "typescript": "~3.7.2"
   },
   "dependencies": {
+    "@aws-cdk/aws-apigateway": "^1.18.0",
     "@aws-cdk/aws-autoscaling": "^1.18.0",
     "@aws-cdk/aws-cloud9": "^1.18.0",
     "@aws-cdk/aws-cloudformation": "^1.18.0",
+    "@aws-cdk/aws-cloudfront": "^1.18.0",
     "@aws-cdk/aws-cognito": "^1.18.0",
     "@aws-cdk/aws-ec2": "^1.18.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "^1.18.0",
