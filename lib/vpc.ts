@@ -1,11 +1,9 @@
-import cdk = require('@aws-cdk/core');
+import core = require('@aws-cdk/core');
 import ec2 = require('@aws-cdk/aws-ec2');
-import { PublicSubnet } from '@aws-cdk/aws-ec2';
-import { countResources } from '@aws-cdk/assert';
 
 
-export class VPCStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+export class VPCStack extends core.Stack {
+  constructor(scope: core.Construct, id: string, props?: core.StackProps) {
     super(scope, id, props);
 
     this.templateOptions.description = 'Building on AWS VPC Stack';
@@ -20,7 +18,7 @@ export class VPCStack extends cdk.Stack {
 
     const PublicSubnet1 = new ec2.CfnSubnet(this, 'PublicSubnet1', {
       cidrBlock: '10.1.1.0/24',
-      availabilityZone: cdk.Fn.select(0, cdk.Fn.getAzs(cdk.Aws.REGION)),
+      availabilityZone: core.Fn.select(0, core.Fn.getAzs(core.Aws.REGION)),
       vpcId: VPC.ref,
       mapPublicIpOnLaunch: true,
       tags: [{
@@ -31,7 +29,7 @@ export class VPCStack extends cdk.Stack {
 
     const PublicSubnet2 = new ec2.CfnSubnet(this, 'PublicSubnet2', {
       cidrBlock: '10.1.2.0/24',
-      availabilityZone: cdk.Fn.select(1, cdk.Fn.getAzs(cdk.Aws.REGION)),
+      availabilityZone: core.Fn.select(1, core.Fn.getAzs(core.Aws.REGION)),
       vpcId: VPC.ref,
       mapPublicIpOnLaunch: true,
       tags: [{
@@ -42,7 +40,7 @@ export class VPCStack extends cdk.Stack {
 
     const PrivateSubnet1 = new ec2.CfnSubnet(this, 'PrivateSubnet1', {
       cidrBlock: '10.1.3.0/24',
-      availabilityZone: cdk.Fn.select(0, cdk.Fn.getAzs(cdk.Aws.REGION)),
+      availabilityZone: core.Fn.select(0, core.Fn.getAzs(core.Aws.REGION)),
       vpcId: VPC.ref,
       tags: [{
         key: 'Name',
@@ -52,7 +50,7 @@ export class VPCStack extends cdk.Stack {
 
     const PrivateSubnet2 = new ec2.CfnSubnet(this, 'PrivateSubnet2', {
       cidrBlock: '10.1.4.0/24',
-      availabilityZone: cdk.Fn.select(1, cdk.Fn.getAzs(cdk.Aws.REGION)),
+      availabilityZone: core.Fn.select(1, core.Fn.getAzs(core.Aws.REGION)),
       vpcId: VPC.ref,
       tags: [{
         key: 'Name',
@@ -158,27 +156,27 @@ export class VPCStack extends cdk.Stack {
       subnetId: PrivateSubnet2.ref
     })
 
-    const VPCOutput = new cdk.CfnOutput(this, 'VPCid', {
+    const VPCOutput = new core.CfnOutput(this, 'VPCid', {
       description: 'VPC',
       value: VPC.ref
     })
 
-    const PublicSubnet1_Output = new cdk.CfnOutput(this, 'PublicSubnet1id', {
+    const PublicSubnet1_Output = new core.CfnOutput(this, 'PublicSubnet1id', {
       description: 'Public Subnet1 1',
       value: PublicSubnet1.ref
     })
 
-    const PublicSubnet2_Output = new cdk.CfnOutput(this, 'PublicSubnet2id', {
+    const PublicSubnet2_Output = new core.CfnOutput(this, 'PublicSubnet2id', {
       description: 'Public Subnet1 2',
       value: PublicSubnet2.ref
     })
 
-    const PrivateSubnet1_Output = new cdk.CfnOutput(this, 'PrivateSubnet1id', {
+    const PrivateSubnet1_Output = new core.CfnOutput(this, 'PrivateSubnet1id', {
       description: 'Private Subnet1 1',
       value: PrivateSubnet1.ref
     })
 
-    const PrivateSubnet2_Output = new cdk.CfnOutput(this, 'PrivateSubnet2id', {
+    const PrivateSubnet2_Output = new core.CfnOutput(this, 'PrivateSubnet2id', {
       description: 'Private Subnet1 2',
       value: PrivateSubnet2.ref
     })

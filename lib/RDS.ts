@@ -1,10 +1,9 @@
-import cdk = require('@aws-cdk/core');
+import core = require('@aws-cdk/core');
 import ec2 = require('@aws-cdk/aws-ec2');
 import rds = require('@aws-cdk/aws-rds');
-import { CfnParameter, CfnOutput } from '@aws-cdk/core';
 
-export class DBstack extends cdk.Stack {
-    constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+export class DBstack extends core.Stack {
+    constructor(scope: core.Construct, id: string, props?: core.StackProps) {
       super(scope, id);
 
     this.templateOptions.metadata = {
@@ -12,22 +11,22 @@ export class DBstack extends cdk.Stack {
     };
     this.templateOptions.description = 'Building on AWS DB Tier Stack';
 
-    const vpcparameter = new CfnParameter(this, 'EC2VpcId', {
+    const vpcparameter = new core.CfnParameter(this, 'EC2VpcId', {
         type: "AWS::EC2::VPC::Id", // remember the vpc and subnet need to create a new one and replace them to demo it
         default: 'vpc-027091518c3abbde4'
     })
     
-    const privatesubnet1 = new CfnParameter(this, 'PrivateSubnet1', {
+    const privatesubnet1 = new core.CfnParameter(this, 'PrivateSubnet1', {
         type: 'AWS::EC2::Subnet::Id',
         default: 'subnet-05ac606304f5e3465'
     })
 
-    const privatesubnet2 = new CfnParameter(this, 'PrivateSubnet2', {
+    const privatesubnet2 = new core.CfnParameter(this, 'PrivateSubnet2', {
         type: 'AWS::EC2::Subnet::Id',
         default: "subnet-0bfa46e496c16b8d6"
     })
 
-    const DBpassword = new CfnParameter(this, 'DBPassword', {
+    const DBpassword = new core.CfnParameter(this, 'DBPassword', {
         noEcho: true,
         type: "String",
         description: "New account and RDS password",
@@ -37,17 +36,17 @@ export class DBstack extends cdk.Stack {
         default: "masterpassword"
     })
 
-    const WebSG = new CfnParameter(this, 'WebSecurityGroup', {
+    const WebSG = new core.CfnParameter(this, 'WebSecurityGroup', {
         type: 'AWS::EC2::SecurityGroup::Id',
         default: "sg-08c81f188a28d198e"
     })
 
-    const EdxProjectCloud9SG = new CfnParameter(this, 'EdxProjectCloud9Sg', {
+    const EdxProjectCloud9SG = new core.CfnParameter(this, 'EdxProjectCloud9Sg', {
         type: 'AWS::EC2::SecurityGroup::Id',
         default: "sg-0eb3c75cb8062fabc"
     })
 
-    const LambdaSG = new CfnParameter(this, 'LambdaSecurityGroup', {
+    const LambdaSG = new core.CfnParameter(this, 'LambdaSecurityGroup', {
         type: 'AWS::EC2::SecurityGroup::Id',
         default: "sg-0ccc82fdf2ea0e608"
     })
@@ -102,9 +101,10 @@ export class DBstack extends cdk.Stack {
         vpcSecurityGroupIds: [dbsecuritygroup.ref]
     })
 
-    const DBendpointOutput = new CfnOutput(this, 'MyDBEndpoint', {
+    const DBendpointOutput = new core.CfnOutput(this, 'MyDBEndpoint', {
         value: RDSCluster.attrEndpointAddress,
-        description: 'MyDB Endpoint'
+        description: 'MyDB Endpoint',
+        exportName: 'dbendpoint'
     })
     }
 }

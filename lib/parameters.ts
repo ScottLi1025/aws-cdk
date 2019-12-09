@@ -1,48 +1,47 @@
-import cdk = require('@aws-cdk/core');
+import core = require('@aws-cdk/core');
 import ssm = require('@aws-cdk/aws-ssm')
-import { CfnParameter, Stack } from '@aws-cdk/core';
 
-export class ParameterStack extends cdk.Stack {
-    constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+export class ParameterStack extends core.Stack {
+    constructor(scope: core.Construct, id: string, props?: core.StackProps) {
       super(scope, id, props);
 
       this.templateOptions.description = 'Building on AWS Parameter Stack';
 
-      const CognitoPoolId = new CfnParameter(this, 'CognitoPoolId', {
+      const CognitoPoolId = new core.CfnParameter(this, 'CognitoPoolId', {
         type: "String",
         default: "default"
       })
 
-      const CognitoClientId = new CfnParameter(this, 'CognitoClientId', {
+      const CognitoClientId = new core.CfnParameter(this, 'CognitoClientId', {
         type: "String",
         default: "default"
       })
 
-      const CognitoClientSecret = new CfnParameter(this, 'CognitoClientSecret', {
+      const CognitoClientSecret = new core.CfnParameter(this, 'CognitoClientSecret', {
         type: "String",
         default: "default"
       })
 
-      const CognitoDomain = new CfnParameter(this, 'CognitoDomain', {
+      const CognitoDomain = new core.CfnParameter(this, 'CognitoDomain', {
         type: "String",
         default: "default"
       })
 
-      const BaseUrl = new CfnParameter(this, 'BaseUrl', {
+      const BaseUrl = new core.CfnParameter(this, 'BaseUrl', {
         type: "String",
         default: "default"
       })
 
-      const DBendpoint = new CfnParameter(this, 'MyDBEndpoint', {
+      const DBendpoint = new core.CfnParameter(this, 'MyDBEndpoint', {
           type: "String",
           default: "default"
       })
-      const s3 = new CfnParameter(this, 'ImageS3Bucket', {
+      const s3 = new core.CfnParameter(this, 'ImageS3Bucket', {
           type: "String",
           default: "default"
       })
 
-      const DBpassword = new CfnParameter(this, 'DBPassword', {
+      const DBpassword = new core.CfnParameter(this, 'DBPassword', {
         noEcho: true,
         type: "String",
         description: "RDS Password.",

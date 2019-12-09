@@ -8,6 +8,12 @@ export class CDNStack extends core.Stack {
     constructor(scope: core.Construct, id: string, props?: core.StackProps) {
         super(scope, id, props);
 
+        this.templateOptions.metadata = {
+            License: 'Apache-2.0',
+        };
+
+        this.templateOptions.description = 'Building on AWS CDN Tier Stack';
+
         const SourceBucket = new core.CfnParameter(this, 'SourceBucket', {
             type: 'String',
             default: 'cdktoolkit-stagingbucket-1tptfxb59a0v7'
