@@ -1,4 +1,5 @@
 import core = require('@aws-cdk/core');
+import Bucket  = require("@aws-cdk/aws-s3");
 import {CfnParameter} from "@aws-cdk/core";
 import {CfnStack} from "@aws-cdk/aws-cloudformation";
 import { DBstack } from '../lib/RDS';
@@ -6,6 +7,7 @@ import { VPCStack } from '../lib/vpc';
 import { SecurityStack } from '../lib/security';
 import { CDNStack } from '../lib/cdn';
 import {CognitoStack} from '../lib/cognito';
+
 
 export class cfnstack extends core.Stack {
     constructor(scope: core.Construct, id: string, props?: core.StackProps) {
@@ -75,7 +77,7 @@ export class cfnstack extends core.Stack {
                 EdxProjectCloud9Sg: "!GetAtt Cloud9Stack.Outputs.EdxProjectCloud9Sg",
                 WebSecurityGroup: "!GetAtt SecurityStack.Outputs.WebSecurityGroup",
                 PrivateSubnet1: "!GetAtt VPCStack.Outputs.PrivateSubnet1",
-                PrivateSubnet2: "!GetAtt VPCStack.Outputs.PrivateSubnet2"
+                PrivateSubnet2: "!GetAtt VPCStack.Outputs.PrivateSubnet2"  //need help
             }
         })
 
@@ -95,12 +97,50 @@ export class cfnstack extends core.Stack {
             templateUrl: "DBstack", //need ref
             timeoutInMinutes: 30,
             parameters: {
-                SourceBucket: "!Ref SourceBucket",
-                EC2VpcId: "!GetAtt VPCStack.Outputs.VPC",
-                PublicSubnet1: "!GetAtt VPCStack.Outputs.PublicSubnet1",
-                PublicSubnet2: "!GetAtt VPCStack.Outputs.PublicSubnet2",
-                WebSecurityGroup: "!GetAtt SecurityStack.Outputs.WebSecurityGroup"
+                CognitoPoolId: "!GetAtt CognitoStack.Outputs.CognitoUserPoolId",
+                CognitoClientId: "!GetAtt CognitoStack.Outputs.CognitoUserPoolClientId",
+                CognitoClientSecret: "!GetAtt CognitoStack.Outputs.ClientSecret",
+                CognitoDomain: "!Sub \"${AppDomain}.auth.${AWS::Region}.amazoncognito.com\"",
+                WebSecurityGroup: "!GetAtt SecurityStack.Outputs.WebSecurityGroup",
+                BaseUrl:
+                    "    !Join\n" +
+                    "          - ''\n" +
+                    "          - - 'https://'\n" +
+                    "            - !GetAtt CDNStack.Outputs.DomainName",
+                ImageS3Bucket:"!Ref ImageS3Bucket",
+                DBPassword:"!Ref DBPassword",
+                MyDBEndpoint:"!GetAtt DBStack.Outputs.MyDBEndpoint"
             }
         })
+
+        const Cloud9Stack = new CfnStack(this, 'Cloud9Stack', {
+             templateUrl:"!Sub 'https://s3.amazonaws.com/${SourceBucket}/cloud9.yaml'",
+             timeoutInMinutes:5,
+             parameters: {
+                 PublicSubnet1: "PublicSubnet1: !GetAtt VPCStack.Outputs.PublicSubnet1\n"
+             }
+        })
+
+        const CognitoStack = new CfnStack(this, "CognitoStack",{
+              templateUrl: "!Sub 'https://s3.amazonaws.com/${SourceBucket}/cognito.yaml'",
+              timeoutInMinutes:5,
+              parameters: {
+                  LogoutUrl: " !Join\n" +
+                      "          - ''\n" +
+                      "          - - 'https://'\n" +
+                      "            - !GetAtt CDNStack.Outputs.DomainName",
+                  CallbackUrl:"     !Join\n" +
+                      "          - ''\n" +
+                      "          - - 'https://'\n" +
+                      "            - !GetAtt CDNStack.Outputs.DomainName\n" +
+                      "            - '/callback'",
+                  AppDomain: "!Ref AppDomain"
+              }
+        })
+
+        const ImageS3Bucket = new Bucket(this,'ImageS3Bucket',{
+              bucketName:"!Sub 'imagebucket${AWS::AccountId}'"
+        })
+
 
     }}
