@@ -8,13 +8,15 @@ import { SecurityStack } from '../lib/security';
 import { ParameterStack } from '../lib/parameters';
 import { IAMStack } from '../lib/iam';
 import { VPCStack } from '../lib/vpc';
+import { CognitoStack } from '../lib/cognito'
  
 
 const app = new core.App();
 new CDNStack(app, 'cdnstack');
 new DBstack(app, 'dbstack');
-new Cloud9Stack(app, 'cloud9stack2');
+new Cloud9Stack(app, 'cloud9stack');
 new SecurityStack(app, 'securitystack');
 new ParameterStack(app, 'parameterstack');
 new IAMStack(app, 'iamtack');
-new VPCStack(app, 'vpcstack')
+new VPCStack(app, 'vpcstack');
+new CognitoStack(app, 'cognitostack')

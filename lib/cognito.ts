@@ -2,46 +2,50 @@ import cdk = require('@aws-cdk/core');
 import iam = require('@aws-cdk/aws-iam');
 import cognito = require('@aws-cdk/aws-cognito');
 import lambda = require('@aws-cdk/aws-lambda');
+import cfn = require('@aws-cdk/aws-cloudformation');
+import fs = require('fs');
 
 
 export class CognitoStack extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
-      super(scope, id, props);
+        super(scope, id, props);
 
-      this.templateOptions.description = 'Building on AWS Cognito Stack Modified https://github.com/rosberglinhares/CloudFormationCognitoCustomResources';
+        this.templateOptions.description = 'Building on AWS Cognito Stack Modified https://github.com/rosberglinhares/CloudFormationCognitoCustomResources';
 
-      const LogoutURL = new cdk.CfnParameter(this, 'LogoutURL', {
-          type: 'String',
-          default: 'http://localhost'
-      })
+        const LogoutURL = new cdk.CfnParameter(this, 'LogoutURL', {
+            type: 'String',
+            default: 'http://localhost'
+        })
 
-      const CallbackURL = new cdk.CfnParameter(this, 'CallbackURL', {
-          type: 'String',
-          default: 'http://localhost/callback'
-      })
+        const CallbackURL = new cdk.CfnParameter(this, 'CallbackURL', {
+            type: 'String',
+            default: 'http://localhost/callback'
+        })
 
-      const AppDomain = new cdk.CfnParameter(this, 'AppDomain', {
-          type: 'String',
-          default: 'us-east-1'
-      })
+        const AppDomain = new cdk.CfnParameter(this, 'AppDomain', {
+            type: 'String',
+            default: 'default'
+        })
 
-      const CognitoSNSPolicy = new iam.CfnManagedPolicy(this, 'CognitoSNSPolicy', {
-          description: 'Managed policy to allow Amazon Cognito to access SNS',
-          policyDocument: {
-              Version: '2012-10-17',
-              Statement: [{
-                  Effect: 'Allow',
-                  Action: 'sns:publish',
-                  resource: "*"
-              }]
-          }
-      })
+        const CognitoSNSPolicy = new iam.CfnManagedPolicy(this, 'CognitoSNSPolicy', {
+            description: 'Managed policy to allow Amazon Cognito to access SNS',
+            policyDocument: {
+                Version: '2012-10-17',
+                Statement: [{
+                    Effect: 'Allow',
+                    Action: [
+                        'sns:publish'
+                    ],
+                    Resource: "*"
+                }]
+            }
+        })
 
-      const SNSRole = new iam.CfnRole(this, 'SNSRole', {
-          description: '"An IAM Role to allow Cognito to send SNS messages"',
-          roleName: 'cognito-sns-role',
-          managedPolicyArns: [CognitoSNSPolicy.ref],
-          assumeRolePolicyDocument: {  
+        const SNSRole = new iam.CfnRole(this, 'SNSRole', {
+            description: '"An IAM Role to allow Cognito to send SNS messages"',
+            roleName: 'cognito-sns-role',
+            managedPolicyArns: [CognitoSNSPolicy.ref],
+            assumeRolePolicyDocument: {  
                 Version: '2012-10-17',  
                 Statement:[{  
                     Effect:"Allow",
@@ -54,10 +58,10 @@ export class CognitoStack extends cdk.Stack {
                     ]
                 }
                 }]
-          }
-      })
+            }
+        })
 
-      SNSRole.addDependsOn(CognitoSNSPolicy)
+    SNSRole.addDependsOn(CognitoSNSPolicy)
       
       const CognitoUserPool = new cognito.CfnUserPool(this, 'CognitoUserPool', {
           userPoolName: 'photos-pool',
@@ -96,7 +100,7 @@ export class CognitoStack extends cdk.Stack {
               }
           ],
           smsConfiguration:{
-              //externalId: cdk.Fn.sub(cdk.Aws.STACK_NAME),
+              externalId: cdk.Aws.STACK_NAME + '-external',
               snsCallerArn: SNSRole.attrArn
           }
 
@@ -108,15 +112,20 @@ export class CognitoStack extends cdk.Stack {
           userPoolId: CognitoUserPool.ref
       })
 
-    //   const CognitoUserPoolClientClientSettings = new cfn.CfnCustomResource(this, 'CognitoUserPoolClientClientSettings', {
-    //       serviceToken: 
-          
-    //   })
+        const CognitoIdPool = new cognito.CfnIdentityPool(this, 'CognitoIdPool', {
+            identityPoolName: 'edxcognitoidpool',
+            cognitoIdentityProviders: [{
+                clientId: CognitoUserPoolClient.ref,
+                providerName: CognitoUserPool.attrProviderName
+            }],
+            allowUnauthenticatedIdentities: false
+        })
+    
       const CognitoCustomResourceRole = new iam.CfnRole(this, 'CognitoCustomResourceRole', {
           roleName: 'cognito_resource_role',
           assumeRolePolicyDocument: {
               Version: '2012-10-17',
-              statement: [{
+              Statement: [{
                   Effect: 'Allow',
                   Action: 'sts:AssumeRole',
                   Principal: {
@@ -206,18 +215,41 @@ export class CognitoStack extends cdk.Stack {
       })
 
 
-      const lambda2 = new lambda.Function(this, 'CloudFormationCognitoUserPoolClientSettings', {
-          functionName: 'CloudFormationCognitoUserPoolClientSettings',
+    //   const CloudFormationCognitoUserPoolClientSettings = new lambda.Function(this, 'CloudFormationCognitoUserPoolClientSettings', {
+    //       functionName: 'CloudFormationCognitoUserPoolClientSettings',
+    //       handler: 'index.handler',
+    //       code: new lambda.InlineCode(fs.readFileSync('./lib/CognitoLambda/cognito.js', { encoding: 'utf-8' })),
+    //       runtime: lambda.Runtime.NODEJS_8_10,
+    //       role: iam.Role.fromRoleArn(this, 'CognitoCustomResourceIRole', CognitoCustomResourceRole.attrArn)
+    //   })
+
+      const CognitoUserPoolClientClientSettings = new cfn.CustomResource(this, 'CognitoUserPoolClientClientSettings', {
+        provider: cfn.CustomResourceProvider.lambda(new lambda.SingletonFunction(this, 'Singleton', {
+          uuid: 'f6dc07d9-1047-4c1b-afdd-749323c87b35',
+          code: new lambda.InlineCode(fs.readFileSync('./lib/CognitoLambda/cognito.js', { encoding: 'utf-8' })),
           handler: 'index.handler',
-          code: lambda.Code.asset('lib/CognitoLambda'),
           runtime: lambda.Runtime.NODEJS_8_10,
           role: iam.Role.fromRoleArn(this, 'CognitoCustomResourceIRole', CognitoCustomResourceRole.attrArn)
-      })
+        })),
+        properties: {
+            UserPoolId: CognitoUserPool.ref,
+            UserPoolClientId: CognitoUserPoolClient.ref,
+            AppDomain: AppDomain.valueAsString,
+            SupportedIdentityProviders: [
+                'COGNITO'
+            ],
+            CallbackURL: CallbackURL.valueAsString,
+            LogoutURL: LogoutURL.valueAsString,
+            AllowedOAuthFlowsUserPoolClient: true,
+            AllowedOAuthFlows: [
+                'code'
+            ],
+            AllowedOAuthScopes: [
+                'openid'
+            ]
+        }
+      });
 
-    //   const CognitoIdPool = new cognito.CfnIdentityPool(this, 'cfnProperties', {
-    //       identityPoolName: 'edxcognitoidpool',
-    //       cognitoIdentityProviders
-    //   })
       const CognitoUserPoolId = new cdk.CfnOutput(this, 'CognitoUserPoolId', {
           description: 'The Pool ID of the Cognito User Pool',
           value: CognitoUserPool.ref
@@ -238,9 +270,9 @@ export class CognitoStack extends cdk.Stack {
           value: CognitoUserPoolClient.ref
       })
 
-    //   const ClientSecret = new cdk.CfnOutput(this, 'ClientSecret', {
-    //       description: 'The Client Secret',
-    //       value:
-    //   })
+      const ClientSecret = new cdk.CfnOutput(this, 'ClientSecret', {
+          description: 'The Client Secret',
+          value: cdk.Fn.getAtt('CognitoUserPoolClientClientSettings', 'ClientSecret').toString()
+      })
     }
 }
