@@ -3,9 +3,9 @@ import cloud9 = require('@aws-cdk/aws-cloud9');
 import lambda = require('@aws-cdk/aws-lambda');
 import iam = require('@aws-cdk/aws-iam');
 import cf = require('@aws-cdk/aws-cloudformation');
+import fs = require('fs');
 
-
-export class Cloud9Stack extends core.Stack {
+export class Cloud9StackInline extends core.Stack {
     constructor(scope: core.Construct, id: string, props?: core.StackProps) {
         super(scope, id, props);
 
@@ -62,44 +62,16 @@ export class Cloud9Stack extends core.Stack {
             }]
         })
 
-        const CustomFunction = new lambda.CfnFunction(this, 'CustomFunction', {
-            code: {
-                'zipFile': "const response = require('cfn-response');\n" +
-                "const AWS = require('aws-sdk');\n" +
-                "exports.handler = (event, context) => {\n" +
-                "   let params = {\n" +
-                "       Filters: [\n" +
-                "           {\n" +
-                '           Name: "tag:aws:cloud9:environment",\n' +
-                '           Values: [\n' +
-                '               event.ResourceProperties.EdxProjectCloud9\n' +
-                '           ]\n' +
-                '          }\n' +
-                '         ]\n' +
-                '        };\n' +
-                '        let ec2 = new AWS.EC2();\n' +
-                '        ec2.describeInstances(params, (err, data) => {\n' +
-                '           if (err) {\n' +
-                '               console.log(err, err.stack); // an error occurred\n' +
-                '               response.send(event, context, response.FAILED, err);\n' +
-                '           }else{\n' +
-                '               let responseData = {Value: data.Reservations[0].Instances[0].SecurityGroups[0].GroupId};\n' +
-                '               console.log(responseData);\n' +
-                '               response.send(event, context, response.SUCCESS, responseData);\n' +
-                '           }\n' +
-                '\n' +
-                '        });\n' +
-                '};\n'
-
-            },
-            runtime: 'nodejs8.10',
+        const CustomFunction = new lambda.Function(this, 'CustomFunction', {
+            functionName: 'CustomFunction',
+            code: new lambda.InlineCode(fs.readFileSync('./lib/Cloud9Lambda/cloud9.js', { encoding: 'utf-8' })),
+            runtime: lambda.Runtime.NODEJS_8_10,
             handler: 'index.handler',
-            role: LambdaExecutionRole.attrArn,
-            timeout: 30
+            role: iam.Role.fromRoleArn(this, 'LambdaExecutionIRole', LambdaExecutionRole.attrArn)
         })
 
         const CustomResource = new cf.CfnCustomResource(this, 'CustomResource', {
-            serviceToken: CustomFunction.attrArn,
+            serviceToken: CustomFunction.functionArn
         })
         CustomResource.addOverride('Properties.EdxProjectCloud9', EdxProjectCloud9.ref)
 
