@@ -13,7 +13,7 @@ import { VPCStack } from '../lib/vpc';
 const app = new core.App();
 new CDNStack(app, 'cdnstack');
 new DBstack(app, 'dbstack');
-new Cloud9Stack(app, 'cloud9stack');
+new Cloud9Stack(app, 'cloud9stack2');
 new SecurityStack(app, 'securitystack');
 new ParameterStack(app, 'parameterstack');
 new IAMStack(app, 'iamtack');
