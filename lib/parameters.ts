@@ -32,16 +32,16 @@ export class ParameterStack extends core.Stack {
           default: "default"
         })
 
-        const DBendpoint = new core.CfnParameter(this, 'MyDBEndpoint', {
+        const MyDBEndpoint = new core.CfnParameter(this, 'MyDBEndpoint', {
             type: "String",
             default: "default"
         })
-        const s3 = new core.CfnParameter(this, 'ImageS3Bucket', {
+        const ImageS3Bucket = new core.CfnParameter(this, 'ImageS3Bucket', {
             type: "String",
             default: "default"
         })
 
-        const DBpassword = new core.CfnParameter(this, 'DBPassword', {
+        const DBPassword = new core.CfnParameter(this, 'DBPassword', {
           noEcho: true,
           type: "String",
           description: "RDS Password.",
@@ -84,7 +84,7 @@ export class ParameterStack extends core.Stack {
         const DBHostParameter = new ssm.CfnParameter(this, 'DBHostParameter', {
           name: 'edx-DATABASE_HOST',
           type: 'String',
-          value: DBendpoint.valueAsString
+          value: DBPassword.valueAsString
         })
 
         const DBUserParameter = new ssm.CfnParameter(this, 'DBUserParameter', {
@@ -96,7 +96,7 @@ export class ParameterStack extends core.Stack {
         const DBPasswordParameter = new ssm.CfnParameter(this, 'DBPasswordParameter', {
           name: 'edx-DATABASE_PASSWORD',
           type: 'String',
-          value: DBpassword.valueAsString
+          value: DBPassword.valueAsString
         })
       
         const DBNameParameter = new ssm.CfnParameter(this, 'DBNameParameter', {
@@ -114,7 +114,7 @@ export class ParameterStack extends core.Stack {
         const PhotosBuckeTParameter = new ssm.CfnParameter(this, 'PhotosBuckeTParameter', {
           name: 'edx-PHOTOS_BUCKET',
           type: 'String',
-          value: s3.valueAsString
+          value: ImageS3Bucket.valueAsString
         })
     }
 }

@@ -19,7 +19,7 @@ export class CDNStack extends core.Stack {
             default: 'cdktoolkit-stagingbucket-1tptfxb59a0v7'
         })
 
-        const EC2VpcId = new core.CfnParameter(this, 'EC2VpcId', {
+        const Ec2VPCId = new core.CfnParameter(this, 'Ec2VPCId', {
             type: 'AWS::EC2::VPC::Id',
             default: 'vpc-027091518c3abbde4'
         })
@@ -172,16 +172,19 @@ export class CDNStack extends core.Stack {
 
         const AlbDNSName = new core.CfnOutput(this, 'AlbDNSName', {
             value: LoadBalancer.attrDnsName,
-            description: 'ALB DNSName'
+            description: 'ALB DNSName',
+            exportName: 'AlbDNSName'
         })
 
         const DomainName = new core.CfnOutput(this, 'DomainName', {
             value: WebpageCDN.attrDomainName,
-            description:'Webpage CloudFront Domain name.'
+            description:'Webpage CloudFront Domain name.',
+            exportName: 'DomainName'
         })
 
         const LoadBalancerArn = new core.CfnOutput(this, 'LoadBalancerArn', {
-            value: LoadBalancer.ref
+            value: LoadBalancer.ref,
+            exportName: 'LoadBalancerArn'
         })
     }
 }

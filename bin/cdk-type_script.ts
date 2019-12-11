@@ -10,7 +10,8 @@ import { IAMStack } from '../lib/iam';
 import { VPCStack } from '../lib/vpc';
 import { CognitoStack } from '../lib/cognito'
 import { Cloud9StackInline } from '../lib/cloud9-Inline'
- 
+import { CfnStack } from '../lib/cfn'
+import { SNSSQSStack } from '../lib/snssqs'
 
 const app = new core.App();
 new CDNStack(app, 'cdnstack');
@@ -22,3 +23,5 @@ new IAMStack(app, 'iamtack');
 new VPCStack(app, 'vpcstack');
 new CognitoStack(app, 'cognitostack')
 new Cloud9StackInline(app, 'cloud9inlinestack')
+new CfnStack(app, 'cfnstack')
+new SNSSQSStack(app, 'snssqsstack')

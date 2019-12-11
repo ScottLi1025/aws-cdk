@@ -83,17 +83,20 @@ export class IAMStack extends core.Stack {
         })
 
         const output = new CfnOutput(this, 'EdXProjectUser',{
-            value: user.attrArn
+            value: user.attrArn,
+            exportName: 'EdXProjectUser'
         })
 
         const output2 = new CfnOutput(this, 'AccessKey',{
             value: cfnaccesskey.ref,
-            description: "AWSAccessKeyId of new user"
+            description: "AWSAccessKeyId of new user",
+            exportName: 'AccessKey'
         })
 
         const output3 = new CfnOutput(this, 'SecretKey',{
             value: cfnaccesskey.attrSecretAccessKey,
-            description: "AWSSecretKey of new user"
+            description: "AWSSecretKey of new user",
+            exportName: 'SecretKey'
         })
     }
 }

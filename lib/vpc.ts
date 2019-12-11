@@ -158,27 +158,32 @@ export class VPCStack extends core.Stack {
 
     const VPCOutput = new core.CfnOutput(this, 'VPCid', {
       description: 'VPC',
-      value: VPC.ref
+      value: VPC.ref,
+      exportName: 'Ec2VPCId'
     })
 
     const PublicSubnet1_Output = new core.CfnOutput(this, 'PublicSubnet1id', {
       description: 'Public Subnet1 1',
-      value: PublicSubnet1.ref
+      value: PublicSubnet1.ref,
+      exportName: 'PublicSubnet1'
     })
 
     const PublicSubnet2_Output = new core.CfnOutput(this, 'PublicSubnet2id', {
       description: 'Public Subnet1 2',
-      value: PublicSubnet2.ref
+      value: PublicSubnet2.ref,
+      exportName: 'PublicSubnet2'
     })
 
     const PrivateSubnet1_Output = new core.CfnOutput(this, 'PrivateSubnet1id', {
       description: 'Private Subnet1 1',
-      value: PrivateSubnet1.ref
+      value: PrivateSubnet1.ref,
+      exportName: 'PrivateSubnet1'
     })
 
     const PrivateSubnet2_Output = new core.CfnOutput(this, 'PrivateSubnet2id', {
       description: 'Private Subnet1 2',
-      value: PrivateSubnet2.ref
+      value: PrivateSubnet2.ref,
+      exportName: 'PrivateSubnet2'
     })
   }
 }

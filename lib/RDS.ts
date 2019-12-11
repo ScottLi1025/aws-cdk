@@ -12,22 +12,22 @@ export class DBstack extends core.Stack {
 
         this.templateOptions.description = 'Building on AWS DB Tier Stack';
 
-        const vpcparameter = new core.CfnParameter(this, 'EC2VpcId', {
+        const Ec2VPCId = new core.CfnParameter(this, 'Ec2VPCId', {
             type: "AWS::EC2::VPC::Id", // remember the vpc and subnet need to create a new one and replace them to demo it
             default: 'vpc-027091518c3abbde4'
         })
     
-        const privatesubnet1 = new core.CfnParameter(this, 'PrivateSubnet1', {
+        const PrivateSubnet1 = new core.CfnParameter(this, 'PrivateSubnet1', {
             type: 'AWS::EC2::Subnet::Id',
             default: 'subnet-05ac606304f5e3465'
         })
 
-        const privatesubnet2 = new core.CfnParameter(this, 'PrivateSubnet2', {
+        const PrivateSubnet2 = new core.CfnParameter(this, 'PrivateSubnet2', {
             type: 'AWS::EC2::Subnet::Id',
             default: "subnet-0bfa46e496c16b8d6"
         })
 
-        const DBpassword = new core.CfnParameter(this, 'DBPassword', {
+        const DBPassword = new core.CfnParameter(this, 'DBPassword', {
             noEcho: true,
             type: "String",
             description: "New account and RDS password",
@@ -37,47 +37,47 @@ export class DBstack extends core.Stack {
             default: "masterpassword"
         })
 
-        const WebSG = new core.CfnParameter(this, 'WebSecurityGroup', {
+        const WebSecurityGroup = new core.CfnParameter(this, 'WebSecurityGroup', {
             type: 'AWS::EC2::SecurityGroup::Id',
             default: "sg-08c81f188a28d198e"
         })
 
-        const EdxProjectCloud9SG = new core.CfnParameter(this, 'EdxProjectCloud9Sg', {
+        const EdxProjectCloud9Sg = new core.CfnParameter(this, 'EdxProjectCloud9Sg', {
             type: 'AWS::EC2::SecurityGroup::Id',
             default: "sg-0eb3c75cb8062fabc"
         })
 
-        const LambdaSG = new core.CfnParameter(this, 'LambdaSecurityGroup', {
+        const LambdaSecurityGroup = new core.CfnParameter(this, 'LambdaSecurityGroup', {
             type: 'AWS::EC2::SecurityGroup::Id',
             default: "sg-0ccc82fdf2ea0e608"
         })
 
         const DBSubnetGroup = new rds.CfnDBSubnetGroup(this, 'MyDBSubnetGroup', {
             dbSubnetGroupDescription: 'MyDBSubnetGroup',
-            subnetIds: [privatesubnet1.valueAsString, privatesubnet2.valueAsString]
+            subnetIds: [PrivateSubnet1.valueAsString, PrivateSubnet2.valueAsString]
         })
 
         const dbsecuritygroup = new ec2.CfnSecurityGroup(this, 'DBSecurityGroup', {
             groupDescription: 'DB traffic',
-            vpcId: vpcparameter.valueAsString,
+            vpcId: Ec2VPCId.valueAsString,
             securityGroupIngress: [
                 {
                     ipProtocol: 'tcp',
                     fromPort: 3306,
                     toPort: 3306,
-                    sourceSecurityGroupId: WebSG.valueAsString
+                    sourceSecurityGroupId: WebSecurityGroup.valueAsString
                 },
                 {
                     ipProtocol: 'tcp',
                     fromPort: 3306,
                     toPort: 3306,
-                    sourceSecurityGroupId: EdxProjectCloud9SG.valueAsString
+                    sourceSecurityGroupId: EdxProjectCloud9Sg.valueAsString
                 },
                 {
                     ipProtocol: 'tcp',
                     fromPort: 3306,
                     toPort: 3306,
-                    sourceSecurityGroupId: LambdaSG.valueAsString
+                    sourceSecurityGroupId: LambdaSecurityGroup.valueAsString
                 },
             ],
             securityGroupEgress: [
@@ -94,7 +94,7 @@ export class DBstack extends core.Stack {
             dbClusterIdentifier: 'edx-photos-db',
             databaseName: 'Photos',
             masterUsername: 'master',
-            masterUserPassword: DBpassword.valueAsString,
+            masterUserPassword: DBPassword.valueAsString,
             engineMode: 'serverless',
             scalingConfiguration: {autoPause: true, maxCapacity: 4, minCapacity: 2},
             engine: 'aurora',
@@ -105,7 +105,7 @@ export class DBstack extends core.Stack {
         const DBendpointOutput = new core.CfnOutput(this, 'MyDBEndpoint', {
             value: RDSCluster.attrEndpointAddress,
             description: 'MyDB Endpoint',
-            exportName: 'dbendpoint'
+            exportName: 'MyDBEndpoint'
         })
     }
 }

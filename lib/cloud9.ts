@@ -105,12 +105,14 @@ export class Cloud9Stack extends core.Stack {
 
         const EdxProjectCloud9Id = new core.CfnOutput(this, 'EdxProjectCloud9Id', {
             value: EdxProjectCloud9.ref,
-            description: 'Edx User Cloud9'
+            description: 'Edx User Cloud9',
+            exportName: 'EdxProjectCloud9Id'
         })
 
         const EdxProjectCloud9Sg = new core.CfnOutput(this, 'EdxProjectCloud9Sg', {
             value: core.Fn.getAtt('CustomResource', 'Value').toString(),
-            description: 'Edx User Cloud9 Security Group ID'
+            description: 'Edx User Cloud9 Security Group ID',
+            exportName: 'EdxProjectCloud9Sg'
         })
     }
 }

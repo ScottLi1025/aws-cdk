@@ -9,7 +9,7 @@ export class SecurityStack extends core.Stack {
 
         this.templateOptions.description = 'Building on AWS Project Security Stack';
 
-        const EC2VpcId = new core.CfnParameter(this, 'EC2VpcId', {
+        const Ec2VPCId = new core.CfnParameter(this, 'Ec2VPCId', {
             type: 'AWS::EC2::VPC::Id',
             default: "vpc-027091518c3abbde4"
         })
@@ -86,7 +86,7 @@ export class SecurityStack extends core.Stack {
         const WebSecurityGroup = new ec2.CfnSecurityGroup(this, 'WebSecurityGroup',{
             groupName: 'web-server-sg',
             groupDescription: 'HTTP traffic',
-            vpcId: EC2VpcId.valueAsString,
+            vpcId: Ec2VPCId.valueAsString,
             securityGroupIngress:[{
                 ipProtocol: 'tcp',
                 fromPort: 80,
@@ -104,7 +104,7 @@ export class SecurityStack extends core.Stack {
         const LambdaSecurityGroup = new ec2.CfnSecurityGroup(this, 'LambdaSecurityGroup', {
             groupName: 'labels-lambda-sg',
             groupDescription: 'HTTP traffic',
-            vpcId: EC2VpcId.valueAsString,
+            vpcId: Ec2VPCId.valueAsString,
             securityGroupEgress:[{
                 ipProtocol: 'tcp',
                 fromPort: 0,
@@ -115,22 +115,26 @@ export class SecurityStack extends core.Stack {
 
         const WebServerInstanceProfileId = new core.CfnOutput(this, 'WebServerInstanceProfileId', {
             value: WebServerInstanceProfile.ref,
-            description: 'Web Server Instance Profile'
+            description: 'Web Server Instance Profile',
+            exportName: 'WebServerInstanceProfileId'
         })
 
         const WebServerRoleId = new core.CfnOutput(this, 'WebServerRoleId', {
             value: WebServerRole.ref,
-            description: 'Web Server Role'
+            description: 'Web Server Role',
+            exportName: 'WebServerRoleId'
         })
 
         const WebSecurityGroupId = new core.CfnOutput(this, 'WebSecurityGroupId', {
             value: WebSecurityGroup.ref,
-            description: 'Web Security Group'
+            description: 'Web Security Group',
+            exportName: 'WebSecurityGroup'
         })
 
         const LambdaSecurityGroupId = new core.CfnOutput(this, 'LambdaSecurityGroupId', {
             value: LambdaSecurityGroup.ref,
-            description: 'Lambda Security Group'
+            description: 'Lambda Security Group',
+            exportName: 'LambdaSecurityGroup'
         })
     }
 }
