@@ -24,7 +24,7 @@ export class CognitoStack extends core.Stack {
 
         const AppDomain = new core.CfnParameter(this, 'AppDomain', {
             type: 'String',
-            default: 'default'
+            default: 'default5'
         })
 
         const CognitoSNSPolicy = new iam.CfnManagedPolicy(this, 'CognitoSNSPolicy', {
@@ -240,7 +240,8 @@ export class CognitoStack extends core.Stack {
 
         const CognitoUserPoolId = new core.CfnOutput(this, 'CognitoUserPoolId', {
             description: 'The Pool ID of the Cognito User Pool',
-            value: CognitoUserPool.ref
+            value: CognitoUserPool.ref,
+            exportName: "CognitoPoolId"
         })
 
         const CognitoUserPoolProviderURL = new core.CfnOutput(this, 'CognitoUserPoolProviderURL', {
@@ -255,12 +256,14 @@ export class CognitoStack extends core.Stack {
 
         const CognitoUserPoolClientId = new core.CfnOutput(this, 'CognitoUserPoolClientId', {
             description: 'The App Client ID',
-            value: CognitoUserPoolClient.ref
+            value: CognitoUserPoolClient.ref,
+            exportName: "CognitoClientId"
         })
 
         const ClientSecret = new core.CfnOutput(this, 'ClientSecret', {
             description: 'The Client Secret',
-            value: core.Fn.getAtt('CognitoUserPoolClientClientSettings', 'ClientSecret').toString()
+            value: core.Fn.getAtt('CognitoUserPoolClientClientSettings', 'ClientSecret').toString(),
+            exportName: "ClientSecret"
         })
     }
 }

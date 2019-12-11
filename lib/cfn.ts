@@ -36,7 +36,7 @@ export class CfnStack extends core.Stack {
             description: 'Unique subdomain for cognito app.',
             allowedPattern: '^[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?$',
             constraintDescription: 'Domain names can only contain lower-case letters, numbers, and hyphens.',
-            default: 'domain'
+            default: 'default6'
         })
 
         const IAMStack = new cfn.CfnStack(this, 'IAMStack', {
@@ -95,30 +95,30 @@ export class CfnStack extends core.Stack {
             }
         })
 
-        // const CognitoStack = new cfn.CfnStack(this, 'CognitoStack', {
-        //     templateUrl: 'https://s3.amazonaws.com/'+ SourceBucket.valueAsString +'/cognitostack.template.json',
-        //     timeoutInMinutes: 5,
-        //     parameters: {
-        //         LogoutURL: '' + 'https://' + core.Fn.importValue("DomainName"),
-        //         CallbackURL: '' + 'https://' + core.Fn.importValue("DomainName"),
-        //         //AppDomain: Appdomain.valueAsString
-        //     }
-        // })
+        const CognitoStack = new cfn.CfnStack(this, 'CognitoStack', {
+            templateUrl: 'https://s3.amazonaws.com/'+ SourceBucket.valueAsString +'/cognitostack.template.json',
+            timeoutInMinutes: 5,
+            parameters: {
+                LogoutURL: '' + 'https://' + core.Fn.importValue("DomainName"),
+                CallbackURL: '' + 'https://' + core.Fn.importValue("DomainName"),
+                AppDomain: Appdomain.valueAsString
+            }
+        })
 
-        // const ParametesStack = new cfn.CfnStack(this, 'ParametesStack', {
-        //     templateUrl: 'https://s3.amazonaws.com/'+ SourceBucket.valueAsString +'/parameterstack.template.json',
-        //     timeoutInMinutes: 15,
-        //     parameters: {
-        //         CognitoPoolId: core.Fn.importValue("CognitoPoolId"),
-        //         CognitoClientId: core.Fn.importValue("CognitoClientId"),
-        //         CognitoClientSecret: core.Fn.importValue("ClientSecret"),
-        //         CognitoDomain: Appdomain + '.auth' + core.Aws.REGION + '.amazoncognito.com',
-        //         BaseUrl: '' + 'https://' + core.Fn.importValue("DomainName"),
-        //         ImageS3Bucket: SourceBucket.valueAsString,
-        //         DBPassword: DBpassword.valueAsString,
-        //         MyDBEndpoint: core.Fn.importValue("MyDBEndpoint")
-        //     }
-        // })
+        const ParametesStack = new cfn.CfnStack(this, 'ParametesStack', {
+            templateUrl: 'https://s3.amazonaws.com/'+ SourceBucket.valueAsString +'/parameterstack.template.json',
+            timeoutInMinutes: 15,
+            parameters: {
+                CognitoPoolId: core.Fn.importValue("CognitoPoolId"),
+                CognitoClientId: core.Fn.importValue("CognitoClientId"),
+                CognitoClientSecret: core.Fn.importValue("ClientSecret"),
+                CognitoDomain: Appdomain + '.auth' + core.Aws.REGION + '.amazoncognito.com',
+                BaseUrl: '' + 'https://' + core.Fn.importValue("DomainName"),
+                //ImageS3Bucket: SourceBucket.valueAsString,
+                DBPassword: DBpassword.valueAsString,
+                MyDBEndpoint: core.Fn.importValue("MyDBEndpoint")
+            }
+        })
 
         const AccessKey = new core.CfnOutput(this, 'AccessKey', {
             value: core.Fn.importValue('AccessKey'),
